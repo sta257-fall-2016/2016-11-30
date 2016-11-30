@@ -1,0 +1,133 @@
+---
+title: "STA257"
+author: "Neil Montgomery | HTML is official | PDF versions good for in-class use only"
+date: "Last edited: `r format(Sys.time(), '%Y-%m-%d %H:%M')`"
+output: 
+  ioslides_presentation: 
+    css: '../styles.css' 
+    widescreen: true 
+    transition: 0.001
+header-includes:
+- \usepackage{cancel}
+---
+\newcommand\given[1][]{\:#1\vert\:}
+\newcommand\P[1]{P{\left(#1\right)}}
+\newcommand\F[1]{F_{\tiny{#1}}}
+\newcommand\f[1]{f_{\tiny{#1}}}
+\newcommand\p[1]{p_{\tiny{#1}}}
+\newcommand\V[1]{\text{Var}\!\left(#1\right)}
+\newcommand\E[1]{E\!\left(#1\right)}
+\newcommand\m[1]{m_{\tiny{#1}}}
+
+# a new way to completely characterize the distribution of a random variable
+
+## what is important about a random variable?
+
+One of the main points of this course: we essentially care about the *distribution* of a random variable $X$, which maps events $X\in A$ to probabilities $P(X\in A).$
+
+So far we have the following ways (***only***) to characterize a random variable's distribution, depending on the circumstances:
+
+1. Cumulative distribution function $F(x) = P(X \le x)$
+
+2. Survival functions $S(x) = P(X > x) = 1 - F(x)$
+
+3. (Discrete only) Probability mass functions $p(x)$
+
+4. (Continuous only) Probability density functions $f(x)$.
+
+We use whichever one is most convenient for a given situation.
+
+## mean, variance, and "moments" { .build }
+
+$\E{X}$ gives *some* (but not all) information about a random variable. 
+
+$\V{X} = \E{X^2} - E(X)^2$ gives some *more* (but still not all) information about a random variable. (e.g. a Binomial(20, 0.5) and a N(10, 5) distribution have the same means and variances, but are not (at all!) the same distributions.)
+
+**Definition:** For integers $k\ge 0$, $\E{X^k}$ (if it exists) is called the $k$th *moment* of a random variable.
+
+Note: calculating all these moments is not the point at all. The concept itself is what is important.
+
+But a few examples could be $X \sim \text{Bernoulli}(p)$ and $Z \sim N(0,1)$.
+
+## moment sequence *characterizes*
+
+If turns out (proof beyond this course, although I'll give the reason in a minute) that if *all* moments exist:
+$$\left\{\E{X}, \E{X^2}, \E{X^3}, \E{X^4},\ldots \right\}$$
+then this sequences *sometimes* gives a *characterization* of the distribution of $X.$
+
+(I'll tell you how to know *when* this "sometimes" is, soon.)
+
+But carrying around infinite sequences is not convenient. We need a nice, convenient package for them.
+
+## "generating function" { .build }
+
+It often happens in mathematics that some big concept can be characterized by an infinite sequence of numbers. 
+
+A common trick is to use those numbers as coefficients in some infinite series (usually constructed to be otherwise useful in some way as well.) 
+
+With the moment sequence we shall do exactly that:
+$$\begin{align*}
+&= 1 + \E{X}\frac{t}{1!} + \E{X^2}\frac{t^2}{2!} + \E{X^3}\frac{t^3}{3!}+\cdots\\
+&= \sum\limits_{k=0}^\infty \E{X^k}\frac{t^k}{k!}\end{align*}$$
+Why this particular infinite series? Because I said so. 
+
+Let's call this function $m(t),$ which is a *generating function* using all moments.
+
+## $m(t)$ is actually an expected value itself { .build }
+
+A bit of manipulation could give:
+$$m(t) = \sum\limits_{k=0}^\infty \E{X^k}\frac{t^k}{k!} = \E{e^{tX}}$$
+
+Of particular importance is the *existence* of that radius of convergence $|t| < R$ (although the actual radius $R>0$ doesn't matter.)
+
+Summary: *if* all moments exist *and if* $\E{e^{tX}}$ is defined with a positive radius of convergence, then we have a neatly packaged object containing *all* the moments.
+
+Theorem: under these conditions, $m(t)$ completely characterizes the distribution of $X.$
+
+Proof: Too hard; depends on complex functions. 
+
+## a generating function using moments { .build }
+
+Definition: $m(t) = \E{e^{tX}}$ is called the *moment generating function* for $X$, if it exists in an interval containing 0.
+
+Examples: Bernoilli, Binomial, $N(0,1)$
+
+You can extract moments from the mgf using derivatives:
+$$\frac{d^k}{dt^k}m(t) = \frac{d^k}{dt^k}\E{e^{tX}} = \E{\frac{d^k}{dt^k}e^{tX}} = \E{X^ke^{tX}}$$
+and then setting $t=0$.
+
+Examples...
+
+## the more important use of mgf
+
+Suppose $X$ and $Y$ are independent random variables with mgfs $\m{X}(t)$ and $\m{Y}(t)$. Then $W = X+Y$ has mgf:
+$$\begin{align*}
+\m{W}(t)=\m{X+Y}(t)&=\E{e^{t(X+Y)}}\\
+&= \E{e^{tX}e^{tY}}\\
+&= \E{e^{tX}}\E{e^{tY}} = \m{X}(t)\m{Y}(t)\end{align*}$$
+
+Corollary: If $X_1,\ldots,X_n$ are independent and $W=\sum X_i$, then:
+$$\m{W}(t) = \prod\limits_{i=1}^n \m{X_i}(t)$$
+
+## some sums of r.v.s { .build }
+
+If $X_1,\ldots,X_n$ are i.i.d. Bernoulli$(p)$, then $\sum X_i \sim \text{Binomial}(n,p)$...
+
+If $X_1,\ldots,X_n$ are i.i.d. Geometric$(p)$, then $\sum X_i \sim \text{NegBin}(n,p)$...
+
+This is fundamentally a "lookup table" technique.
+
+Others (exercises):
+
+* sum of $n$ independent Exp$(\lambda)$ is Gamma$(n,\lambda)$
+* sum of $n$ independent Poisson$(\lambda)$ is Poisson$(n\lambda)$
+* sum of $X_i\sim\text{Binomial}(n_i, p)$ is Binomial$\left(\sum n_i, p\right)$
+
+## the normal distributions { .build }
+
+First, suppose $X$ has mgf $\m{X}(t)$ and $Y = a + bX$. What is $\m{Y}(t)$?
+
+So what is the mfg of a general $N(\mu, \sigma^2)?$
+
+Finally, if $X_1,\ldots,X_n$ are independent with $X_i\sim N(\mu_i, \sigma^2_i)?$, what distribution is $X=\sum X_i?$
+
